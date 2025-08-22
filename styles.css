@@ -38,7 +38,7 @@ a{color:inherit}
 .hamburger{display:none; background:#fff3cd; border:1.5px solid #e5c89c; color:var(--brand-dark); padding:8px 10px; border-radius:12px}
 #nav{width:100%}
 .mainnav{list-style:none; margin:0 auto; padding:0; max-width:1200px; display:flex; align-items:center; justify-content:center; gap:1.25rem}
-.mainnav > li{position:relative} /* so dropdowns position correctly */
+.mainnav > li{position:relative}
 .mainnav a{display:inline-flex; align-items:center; gap:.35rem; text-decoration:none; color:#333; font-weight:700; padding:.95rem .6rem}
 .mainnav a:hover{color:var(--brand-dark)}
 .mainnav a.active{color:var(--brand-dark)}
@@ -127,6 +127,34 @@ a{color:inherit}
 .arrow:hover{background:#ffe6bf}
 @media (prefers-reduced-motion:reduce){.slide{transition:none}}
 
+/* === Hide carousel arrows & dots unless hovered with a mouse === */
+
+/* Start hidden (but keep focusable for keyboard users) */
+.carousel .controls,
+.carousel .indicators {
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+/* Prevent accidental taps/clicks when hidden */
+.carousel:not(:hover) .arrow,
+.carousel:not(:hover) .indicators .dot {
+  pointer-events: none;
+}
+
+/* Show on mouse hover (only on devices that support hover) */
+@media (hover:hover) {
+  .carousel:hover .controls,
+  .carousel:hover .indicators {
+    opacity: 1;
+  }
+}
+
+/* Also show if the user tabs into the controls or dots (accessibility) */
+.carousel .controls:focus-within,
+.carousel .indicators:focus-within {
+  opacity: 1;
+}
 
 /* ===== Welcome header ===== */
 .welcome{
@@ -177,6 +205,8 @@ a{color:inherit}
   color: var(--text);
   text-align:center;
   font-weight:800;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 .cta-icon .circle{
@@ -186,11 +216,11 @@ a{color:inherit}
   display:grid;
   place-items:center;
   position: relative;
-  background: var(--brand);   /* brand gradient/solid */
+  background: var(--brand);
   border: 1.5px solid var(--brand-dark);
   box-shadow: var(--shadow);
   overflow:hidden;
-  transition: transform .2s ease;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
 }
 .cta-icon .circle::after{
   content:"";
@@ -205,14 +235,45 @@ a{color:inherit}
   letter-spacing:.04em;
   color: var(--brand-dark);
 }
-.cta-icon:hover .circle{ transform: translateY(-3px); }
 
+@media (hover:hover){
+  .cta-icon:hover .circle{ transform: translateY(-3px); }
+}
+/* Tap feedback */
+.cta-icon:active .circle{
+  transform: scale(0.96);
+  background: var(--brand-dark);
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+}
+@media (prefers-reduced-motion: reduce){
+  .cta-icon .circle{ transition:none; }
+}
+
+/* Tablet: 2 columns */
 @media (max-width: 900px){
   .cta-icons{ grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Size & spacing tweaks for small screens (and bolder icons) */
+@media (max-width: 600px){
+  .cta-icons{ gap: 28px; }
+  .cta-icon .circle{ width: 160px; }
+  .cta-icon svg{ width: 58%; height: 58%; } /* bold at ≤600px */
+  .cta-icon .label{ font-size:1.1rem; margin-top:10px; letter-spacing:.02em; }
+}
+
+/* Small phones: keep 2×2 instead of stacking */
 @media (max-width: 520px){
-  .cta-icons{ grid-template-columns: 1fr; }
-  .cta-icon .circle{ width: 200px; }
+  .cta-icons{ grid-template-columns: repeat(2, minmax(0, 1fr)); gap:22px; }
+  .cta-icon .circle{ width:150px; }
+  .cta-icon .label{ font-size:1.05rem; }
+}
+
+/* Extra-narrow phones: fall back to one column */
+@media (max-width: 360px){
+  .cta-icons{ grid-template-columns: 1fr; gap:18px; }
+  .cta-icon .circle{ width:140px; }
+  .cta-icon .label{ font-size:1rem; }
 }
 
 /* ===== Social Feed ===== */
@@ -226,23 +287,64 @@ a{color:inherit}
   margin-bottom:20px;
 }
 
-/* Responsive, larger square tiles */
+/* === Mobile-friendly upgrades for FOLLOW US gallery === */
 .insta-grid{
   display:grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap:16px;
+  gap: clamp(12px, 2.4vw, 18px);
 }
+
 .insta-grid img{
+  display:block;
   width:100%;
   aspect-ratio: 1 / 1;
   object-fit:cover;
   border-radius:12px;
+  border:1px solid var(--line);
   box-shadow:0 4px 12px rgba(0,0,0,0.15);
-  transition:transform .3s;
+  transition: transform .2s ease, box-shadow .2s ease;
+  will-change: transform;
 }
-.insta-grid img:hover{transform:scale(1.03)}
+
+@media (hover:hover){
+  .insta-grid img:hover{
+    transform: scale(1.02);
+    box-shadow: 0 8px 22px rgba(0,0,0,.18);
+  }
+}
+
+/* Tap feedback on touch */
+.insta-grid img:active{
+  transform: scale(0.97);
+}
+
+/* Tablet: exactly 3 columns (comfy) */
+@media (max-width: 900px){
+  .insta-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Phones: match the 2×2 vibe of the action icons */
+@media (max-width: 600px){
+  .insta-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .insta-grid img{ border-radius: 12px; }
+}
+
+/* Extra-narrow phones: single column */
 @media (max-width: 380px){
-  .insta-grid{grid-template-columns: repeat(auto-fill, minmax(240px, 1fr))}
+  .insta-grid{
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .insta-grid img{ border-radius: 10px; }
+}
+
+/* Optional: keyboard focus if images are links (wrap img in <a>) */
+.insta-grid a:focus-visible img{
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
 }
 
 /* ===== Footer ===== */
@@ -259,6 +361,34 @@ footer{border-top:2px solid var(--line); margin-top:40px; background:#fff}
 :is(a,button):focus{outline:3px solid var(--ring); outline-offset:2px}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
+/* === Center the footer layout and content === */
+footer { text-align: center; }
+
+footer .footgrid {
+  display: grid;
+  grid-template-columns: 1fr;   /* stack everything */
+  place-items: center;          /* center horizontally & vertically */
+  row-gap: 12px;
+  padding: 26px 0;
+}
+
+footer .footlogo {
+  margin-inline: auto;
+}
+
+/* Make links a centered, wrapping row of pills */
+footer .links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 22px;
+}
+
+footer .links a {
+  text-align: center;
+  text-decoration: none;
+  padding: 6px 8px;
+}
 
 /* ===== Page Hero (About banner) ===== */
 .page-hero{
@@ -335,6 +465,7 @@ footer{border-top:2px solid var(--line); margin-top:40px; background:#fff}
   border-radius:999px; background: var(--brand); border:2px solid #fff; box-shadow:0 0 0 2px var(--brand-2);
 }
 .t-body h4{ margin:0 0 4px; color: var(--brand-dark); }
+
 /*mission */
 .mission-content h3 {
   margin-top: 1.6em;
@@ -350,6 +481,7 @@ footer{border-top:2px solid var(--line); margin-top:40px; background:#fff}
   font-size: 1.4rem;
   color: var(--brand);
 }
+
 /*history*/
 .history-content {
   display: flex;
@@ -370,8 +502,8 @@ footer{border-top:2px solid var(--line); margin-top:40px; background:#fff}
 /* Special style for founding letters and class images */
 .founding-letters-class {
   display: block;
-  max-width: 400px;   /* adjust size as needed */
-  margin: 0 auto 1.5em auto;  /* centers the image and adds bottom spacing */
+  max-width: 400px;
+  margin: 0 auto 1.5em auto;
 }
 
 /* Parents & Family */
@@ -381,7 +513,7 @@ footer{border-top:2px solid var(--line); margin-top:40px; background:#fff}
 }
 .parents-feature img {
   width: 100%;
-  max-width: 520px;          /* keeps it tasteful on wide screens */
+  max-width: 520px;
   border-radius: 14px;
   box-shadow: var(--shadow);
   display: block;
@@ -459,3 +591,57 @@ footer{border-top:2px solid var(--line); margin-top:40px; background:#fff}
 }
 .faq-item[open] .faq-q{ color: var(--brand-dark); }
 
+/* ===== Contact page ===== */
+.contact-cards{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.contact-grid{ align-items: start; }
+
+.contact-form{
+  display:grid; gap: 12px;
+  background:#fff; border:1px solid var(--line); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: var(--shadow);
+}
+.contact-form h2{ margin: 0 0 6px; color: var(--brand-dark); }
+.contact-form label{ display:grid; gap:6px; font-weight:700; }
+.contact-form input,
+.contact-form select,
+.contact-form textarea{
+  width:100%; padding:10px 12px; border-radius:12px;
+  border:1px solid #ead8ad; background:#fffdf7; font:inherit;
+}
+.contact-form .agree{ display:flex; align-items:flex-start; gap:10px; font-weight:600; }
+.contact-form .actions{ display:flex; align-items:center; gap:12px; }
+.contact-form .hp{ position:absolute; left:-10000px; opacity:0; }
+
+.contact-aside p{ margin:.4rem 0; }
+
+.officer-grid{
+  display:grid; gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.officer{
+  background:#fff; border:1px solid var(--line);
+  border-radius:14px; box-shadow: var(--shadow); padding:12px;
+  text-align:center;
+}
+.officer img{
+  width:100%; aspect-ratio: 4/3; object-fit:cover;
+  border-radius:10px; margin-bottom:8px;
+}
+
+.map-embed iframe{
+  border-radius: 14px; box-shadow: var(--shadow); border:1px solid var(--line);
+}
+
+/* Optional toast */
+.toast{
+  position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
+  background: #fff; border: 1px solid var(--line); border-radius: 999px;
+  padding: 10px 16px; box-shadow: var(--shadow); z-index: 9999;
+  display:none;
+}
+.toast.show{ display:block; }
