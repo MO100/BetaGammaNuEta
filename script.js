@@ -99,4 +99,21 @@ document.querySelectorAll('.faq .faq-item').forEach(d => {
   });
 });
 
+// Tiny toast for inline confirmations (used by contact form)
+(function(){
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.setAttribute('role','status');
+  t.setAttribute('aria-live','polite');
+  document.body.appendChild(t);
+
+  let tid = null;
+  document.addEventListener('toast', (e) => {
+    const msg = e.detail || 'Saved.';
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(tid);
+    tid = setTimeout(()=> t.classList.remove('show'), 2500);
+  });
+})();
 
