@@ -645,3 +645,82 @@ footer .links a {
   display:none;
 }
 .toast.show{ display:block; }
+
+/* ===== Heart of USA – Introduction ===== */
+.husa-intro {
+  background: radial-gradient(circle at top, #0b2a4a 0%, #071d33 65%, #06162a 100%);
+  padding: clamp(48px, 8vw, 96px) 0;
+  color: #e9f1f8;
+}
+
+.husa-intro-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: clamp(28px, 5vw, 64px);
+  align-items: center;
+  position: relative;
+}
+
+/* Title */
+.intro-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: #1fd18b;
+  margin-bottom: 18px;
+  font-weight: 800;
+}
+
+/* Quotes */
+.intro-quote {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #dbe7f2;
+}
+
+.intro-quote p {
+  margin: 0 0 14px;
+}
+
+.intro-quote footer {
+  color: #9ddfc4;
+  font-weight: 700;
+}
+
+/* Photos */
+.intro-photo {
+  display: flex;
+  justify-content: center;
+}
+
+.intro-photo img {
+  width: min(340px, 90%);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 999px;
+  border: 10px solid #1fd18b;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* Badge */
+.intro-badge {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 24px;
+}
+
+.intro-badge img {
+  width: 120px;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 900px) {
+  .husa-intro-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .intro-badge {
+    justify-content: center;
+  }
+}

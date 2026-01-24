@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Beta Gamma Nu Eta – Contact</title>
+  <title>Beta Gamma Nu Eta - Contact</title>
   <link rel="icon" type="image/png" sizes="192x192" href="assets/main_pics/logo/BGN_transparent.png">
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -90,7 +90,7 @@
     <section class="section" aria-labelledby="quick">
       <div class="section-head">
         <h2 id="quick">Quick Contacts</h2>
-        <p class="muted">We typically reply within 1–2 business days.</p>
+        <p class="muted">We typically reply within 1-2 business days.</p>
       </div>
 
       <div class="contact-cards">
@@ -178,10 +178,10 @@
 
         <aside class="card contact-aside">
           <h3 class="card-title">Visit / Mail</h3>
-          <p><strong>Beta Gamma Nu – Eta Chapter</strong><br>
+          <p><strong>Beta Gamma Nu - Eta Chapter</strong><br>
              Example Campus Address<br>
              Fresno, CA 93740</p>
-          <p><strong>Hours:</strong> Mon–Fri 9am–5pm</p>
+          <p><strong>Hours:</strong> Mon-Fri 9am-5pm</p>
           <p class="muted">Come say Hi and ask questionsa at our BGN booth near the Fresno State library</p>
         </aside>
       </div>
@@ -239,49 +239,5 @@
     </div>
   </footer>
 
-  <script src="script.js"></script>
-  <script>
-    (function(){
-      const form = document.getElementById('contactForm');
-      const status = document.getElementById('formStatus');
-      if (!form) return;
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        // Honeypot
-        if (form.company && form.company.value.trim() !== '') {
-          status.textContent = 'Submission blocked (spam detected).';
-          return;
-        }
-
-        if (!form.checkValidity()) {
-          form.reportValidity();
-          return;
-        }
-
-        status.textContent = 'Sending…';
-
-        try {
-          const res = await fetch(form.action, {
-            method: 'POST',
-            body: new FormData(form)  // no custom headers → simpler CORS
-          });
-
-          if (res.ok) {
-            status.textContent = 'Thanks! Your message was sent.';
-            document.dispatchEvent(new CustomEvent('toast', { detail: 'Message sent ✅' }));
-            form.reset();
-          } else {
-            status.textContent = 'Hmm, something went wrong. Please email us directly.';
-            document.dispatchEvent(new CustomEvent('toast', { detail: 'Send failed — try email.' }));
-          }
-        } catch (err) {
-          status.textContent = 'Network error. Please try again or email us.';
-          document.dispatchEvent(new CustomEvent('toast', { detail: 'Network error.' }));
-        }
-      });
-    })();
-  </script>
 </body>
 </html>

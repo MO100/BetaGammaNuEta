@@ -41,6 +41,7 @@ let timer = null;
 const DURATION = 2000;
 
 function renderDots() {
+  if (!dotsWrap) return;
   dotsWrap.innerHTML = '';
   slides.forEach((_, i) => {
     const b = document.createElement('button');
@@ -52,6 +53,7 @@ function renderDots() {
 }
 
 function go(newIdx, user = false) {
+  if (slides.length === 0) return;
   slides[idx].classList.remove('active');
   idx = (newIdx + slides.length) % slides.length;
   slides[idx].classList.add('active');
@@ -67,13 +69,15 @@ function restart() {
   if (!prefersReduced) timer = setInterval(nextSlide, DURATION);
 }
 
-next.addEventListener('click', () => go(idx + 1, true));
-prev.addEventListener('click', prevSlide);
+if (next) next.addEventListener('click', () => go(idx + 1, true));
+if (prev) prev.addEventListener('click', prevSlide);
 
 // Pause on hover
 const carousel = document.querySelector('.carousel');
-carousel.addEventListener('mouseenter', () => timer && clearInterval(timer));
-carousel.addEventListener('mouseleave', restart);
+if (carousel) {
+  carousel.addEventListener('mouseenter', () => timer && clearInterval(timer));
+  carousel.addEventListener('mouseleave', restart);
+}
 
 // Keyboard controls
 document.addEventListener('keydown', (e) => {
@@ -86,7 +90,8 @@ renderDots();
 restart();
 
 // Footer year
-document.getElementById('year').textContent = new Date().getFullYear();
+const yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 // ===== FAQ: close others when one opens (optional) =====
 document.querySelectorAll('.faq .faq-item').forEach(d => {
@@ -117,3 +122,46 @@ document.querySelectorAll('.faq .faq-item').forEach(d => {
   });
 })();
 
+// ===== Contact form logic (moved from contact.html) =====
+(function(){
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+
+  const status = document.getElementById('formStatus');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Honeypot
+    if (form.company && form.company.value.trim() !== '') {
+      status.textContent = 'Submission blocked (spam detected).';
+      return;
+    }
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    status.textContent = 'Sending…';
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form)  // no custom headers → simpler CORS
+      });
+
+      if (res.ok) {
+        status.textContent = 'Thanks! Your message was sent.';
+        document.dispatchEvent(new CustomEvent('toast', { detail: 'Message sent ✅' }));
+        form.reset();
+      } else {
+        status.textContent = 'Hmm, something went wrong. Please email us directly.';
+        document.dispatchEvent(new CustomEvent('toast', { detail: 'Send failed — try email.' }));
+      }
+    } catch (err) {
+      status.textContent = 'Network error. Please try again or email us.';
+      document.dispatchEvent(new CustomEvent('toast', { detail: 'Network error.' }));
+    }
+  });
+})();
